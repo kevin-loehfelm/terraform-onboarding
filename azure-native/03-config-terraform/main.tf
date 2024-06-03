@@ -54,6 +54,39 @@ resource "tfe_variable" "vault_auth_path" {
   variable_set_id = tfe_variable_set.this.id
 }
 
+resource "tfe_variable" "vault_azure_auth" {
+  key             = "TFC_VAULT_BACKED_AZURE_RUN_VAULT_ROLE"
+  value           = "azure-native"
+  category        = "env"
+  description     = "Vault-backed Azure Auth role"
+  variable_set_id = tfe_variable_set.this.id
+}
+
+resource "tfe_variable" "vault_azure_auth_role" {
+  key             = "TFC_VAULT_BACKED_AZURE_AUTH"
+  value           = true
+  category        = "env"
+  description     = "Enable Vault-backed Azure Dynamic Credentials"
+  variable_set_id = tfe_variable_set.this.id
+}
+
+resource "tfe_variable" "vault_azure_auth_path" {
+  key             = "TFC_VAULT_BACKED_AZURE_MOUNT_PATH"
+  value           = "azure-native"
+  category        = "env"
+  description     = "Azure Auth mount path"
+  variable_set_id = tfe_variable_set.this.id
+}
+
+resource "tfe_variable" "vault_azure_sleep_seconds" {
+  key             = "TFC_VAULT_BACKED_AZURE_SLEEP_SECONDS"
+  value           = 10
+  category        = "env"
+  description     = "Sleep Seconds"
+  variable_set_id = tfe_variable_set.this.id
+}
+
+
 resource "tfe_project_variable_set" "this" {
   variable_set_id = tfe_variable_set.this.id
   project_id      = tfe_project.this.id

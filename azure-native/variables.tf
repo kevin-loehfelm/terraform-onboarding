@@ -36,6 +36,11 @@ variable "terraform_run_phase" {
   description = "terraform run phase: plan, apply, *"
 }
 
+variable "terraform_token_ttl" {
+  type    = number
+  default = 300
+}
+
 /*******************************************
 Vault Configuration Variables
 *******************************************/
@@ -57,7 +62,8 @@ variable "vault_auth_role_name" {
   default     = "terraform_admin"
 }
 
-variable "terraform_token_ttl" {
-  type    = number
-  default = 300
+variable "vault_azure_secrets_engine_path" {
+  type        = string
+  description = "vault azure secrets engine mount path | default: azure-native"
+  default     = "azure-native"
 }

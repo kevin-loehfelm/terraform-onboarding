@@ -21,3 +21,28 @@ variable "terraform_subject_identifier" {
 variable "terraform_token_ttl" {
   type = string
 }
+
+variable "azure_client_id" {
+  type = string
+}
+
+variable "azure_client_secret" {
+  sensitive = true
+  type      = string
+}
+
+variable "azure_tenant_id" {
+  type = string
+}
+
+variable "azure_object_id" {
+  type = string
+}
+
+variable "vault_azure_secrets_engine_path" {
+  type = string
+}
+
+variable "terraform_token" {
+  sensitive = true
+}

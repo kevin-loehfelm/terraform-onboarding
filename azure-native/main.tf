@@ -1,8 +1,18 @@
 # Configure Azure
 module "azure_config" {
   source = "./01-config-azure"
+}
 
+resource "tfe_team" "this" {
+  name         = var.vault_azure_secrets_engine_path
+  organization = "kloehfelm-demo"
+    organization_access {
+    manage_vcs_settings = true
+  }
+}
 
+resource "tfe_team_token" "this" {
+  team_id = tfe_team.this.id
 }
 
 # Configure Vault
@@ -16,6 +26,13 @@ module "vault_config" {
   terraform_addr               = var.terraform_addr
   terraform_subject_identifier = "organization:${var.terraform_org_name}:project:${var.terraform_project_name}:workspace:${var.terraform_workspace_name}:run_phase:${var.terraform_run_phase}"
   terraform_token_ttl          = var.terraform_token_ttl
+  terraform_token              = tfe_team_token.this
+
+  vault_azure_secrets_engine_path = var.vault_azure_secrets_engine_path
+  azure_object_id                 = module.azure_config.azure_object_id
+  azure_client_id                 = module.azure_config.azure_client_id
+  azure_client_secret             = module.azure_config.azure_client_secret
+  azure_tenant_id                 = module.azure_config.azure_tenant_id
 }
 
 # Configure Terraform
