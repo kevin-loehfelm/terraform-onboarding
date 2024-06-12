@@ -1,4 +1,4 @@
-# Configure Azure
+# Module: Configure Azure
 module "azure_config" {
   source = "./01-config-azure"
 
@@ -12,7 +12,7 @@ resource "time_sleep" "wait_30_seconds" {
   create_duration = "30s"
 }
 
-# Configure Vault
+# Module: Configure Vault
 module "vault_config" {
   depends_on = [time_sleep.wait_30_seconds]
 
@@ -35,7 +35,7 @@ module "vault_config" {
   azure_secrets_engine_role = "terraform"
 }
 
-# Configure Terraform
+# Module: Configure Terraform
 module "terraform_config" {
   source = "./03-config-terraform"
 
@@ -53,11 +53,12 @@ module "terraform_config" {
   github_token = var.github_token
 }
 
-## Configure No-Code Module for Workspace Creation
+## Data Source(s): HCP Terraform GitHub App
 data "tfe_github_app_installation" "this" {
   name = "kevin-loehfelm"
 }
 
+## Resource(s): Publish Project Module to PMR
 resource "tfe_registry_module" "this" {
   organization = var.terraform_org_name
   vcs_repo {
@@ -71,6 +72,7 @@ resource "tfe_registry_module" "this" {
   }
 }
 
+## Resource(s): Configure Published Module as No-Code Module
 resource "tfe_no_code_module" "this" {
   organization    = var.terraform_org_name
   registry_module = tfe_registry_module.this.id

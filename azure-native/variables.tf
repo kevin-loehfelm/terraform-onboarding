@@ -41,11 +41,6 @@ variable "terraform_token_ttl" {
   default = 300
 }
 
-variable "github_workspace_module_repo" {
-  type    = string
-  default = "kevin-loehfelm/terraform-tfe-demo-workspace"
-}
-
 /*******************************************
 Vault Configuration Variables
 *******************************************/
@@ -80,4 +75,9 @@ variable "github_token" {
   type        = string
   description = "github token"
   sensitive   = true
+}
+
+variable "github_workspace_module_repo" {
+  type    = string
+  default = "kevin-loehfelm/terraform-demo-project"
 }
