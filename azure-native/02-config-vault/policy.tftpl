@@ -1,7 +1,3 @@
-path "${azure_secrets_path}/creds/azure-native" {
-  capabilities = [ "create", "read", "update", "delete", "list", "sudo" ]
-}
-
-path "terraform/creds/azure-secrets-engine" {
+path "${azure_secrets_engine_path}/creds/${azure_secrets_engine_role}" {
   capabilities = [ "create", "read", "update", "delete", "list", "sudo" ]
 }

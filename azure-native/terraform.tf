@@ -12,5 +12,9 @@ terraform {
       version = ">= 0.55.0" # May 28, 2024
       source  = "hashicorp/tfe"
     }
+    time = {
+      version = ">= 0.11.2" # Jun 06 2024
+      source  = "hashicorp/time"
+    }
   }
 }

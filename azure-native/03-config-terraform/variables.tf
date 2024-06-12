@@ -1,19 +1,36 @@
-variable "terraform_org_name" {
+variable "organization_name" {
   type = string
 }
 
-variable "terraform_project_name" {
+variable "project_name" {
   type = string
 }
 
-variable "terraform_workspace_name" {
+variable "workspace_name" {
   type = string
 }
 
-variable "vault_auth_path" {
+variable "terraform_auth_path" {
   type = string
 }
 
-variable "vault_auth_role_name" {
+variable "terraform_auth_role" {
   type = string
+}
+
+variable "azure_secrets_engine_path" {
+  type = string
+}
+
+variable "azure_secrets_engine_role" {
+  type = string
+}
+
+variable "terraform_team_name" {
+  type = string
+}
+
+variable "github_token" {
+  type      = string
+  sensitive = true
 }

@@ -41,6 +41,11 @@ variable "terraform_token_ttl" {
   default = 300
 }
 
+variable "github_workspace_module_repo" {
+  type    = string
+  default = "kevin-loehfelm/terraform-tfe-demo-workspace"
+}
+
 /*******************************************
 Vault Configuration Variables
 *******************************************/
@@ -66,4 +71,13 @@ variable "vault_azure_secrets_engine_path" {
   type        = string
   description = "vault azure secrets engine mount path | default: azure-native"
   default     = "azure-native"
+}
+
+/*******************************************
+GitHub Configuration Variables
+*******************************************/
+variable "github_token" {
+  type        = string
+  description = "github token"
+  sensitive   = true
 }
