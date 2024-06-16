@@ -2,8 +2,8 @@
 module "azure_config" {
   source = "./01-config-azure"
 
-  app_vault_spn_name          = "vault--azure-secrets-engine"
-  app_tfe_onboarding_spn_name = "tfe-onboarding"
+  app_vault_spn_name          = "azure-secrets-engine"
+  app_tfe_onboarding_spn_name = "terraform-onboarding"
 }
 
 resource "time_sleep" "wait_30_seconds" {
@@ -38,6 +38,8 @@ module "vault_config" {
 # Module: Configure Terraform
 module "terraform_config" {
   source = "./03-config-terraform"
+
+  prefix = var.prefix
 
   organization_name = var.terraform_org_name
   project_name      = var.terraform_project_name

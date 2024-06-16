@@ -123,17 +123,25 @@ resource "tfe_variable" "github_token" {
   variable_set_id = tfe_variable_set.this.id
 }
 
-resource "tfe_project" "demo_prod" {
-  organization = var.organization_name
-  name         = "demo-prod"
+resource "tfe_variable" "prefix" {
+  key             = "prefix"
+  value           = var.prefix
+  category        = "terraform"
+  description     = "prefix"
+  variable_set_id = tfe_variable_set.this.id
 }
 
-resource "tfe_project" "demo_dev" {
+resource "tfe_project" "prod" {
   organization = var.organization_name
-  name         = "demo-dev"
+  name         = "${var.prefix}-prod"
 }
 
-resource "tfe_project" "demo_stage" {
+resource "tfe_project" "dev" {
   organization = var.organization_name
-  name         = "demo-stage"
+  name         = "${var.prefix}-dev"
+}
+
+resource "tfe_project" "stage" {
+  organization = var.organization_name
+  name         = "${var.prefix}-stage"
 }

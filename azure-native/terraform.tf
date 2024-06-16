@@ -6,7 +6,7 @@ terraform {
     }
     external = {
       version = ">= 2.3.3"
-      source = "hashicorp/external"
+      source  = "hashicorp/external"
     }
     tfe = {
       version = ">= 0.55.0" # May 28, 2024

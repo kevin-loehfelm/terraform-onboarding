@@ -1,3 +1,7 @@
+variable "prefix" {
+  type = string
+}
+
 variable "organization_name" {
   type = string
 }

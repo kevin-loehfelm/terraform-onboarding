@@ -1,4 +1,14 @@
 /*******************************************
+Environment Configuration
+*******************************************/
+variable "prefix" {
+  type        = string
+  description = "environment prefix"
+  default     = "demo"
+}
+
+
+/*******************************************
 Azure Configuration Variables
 *******************************************/
 variable "azure_application_name" {
