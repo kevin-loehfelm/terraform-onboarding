@@ -1,3 +1,9 @@
+## Protected Files
+**/.env
+**/local
+**/downstream
+
+
 # Local .terraform directories
 **/.terraform/*
 

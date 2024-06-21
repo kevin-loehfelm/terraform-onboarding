@@ -1,0 +1,19 @@
+# Read dynamic credentials for existing Azure service principal
+path "${azure_secrets_path}/creds/${azure_secrets_role}" {
+  capabilities = [ "read" ]
+}
+
+# Read dynamic credentials for HCP Terraform
+path "${terraform_secrets_path}/creds/${terraform_secrets_role}" {
+  capabilities = [ "read" ]
+}
+
+# Read static credentials for HCP Terraform
+path "${static_secrets_path}/data/${static_terraform_key}" {
+  capabilities = [ "read" ]
+}
+
+# Read static credentials for GitHub
+path "${static_secrets_path}/data/${static_github_key}" {
+  capabilities = [ "read" ]
+}
