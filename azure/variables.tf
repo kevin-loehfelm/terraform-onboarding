@@ -23,18 +23,18 @@ variable "max_ttl" {
 /*******************************************
 Azure Configuration Variables
 *******************************************/
-# Variable(s): Azure Application Name for Vault Azure Secrets Engine (azure-secrets-engine)
+# Variable(s): Azure Application Name for Vault Azure Secrets Engine
 variable "azure_app_azure_secrets_engine" {
   type        = string
   description = "azure application name for azure secrets engine"
-  default     = "azure-secrets-engine"
+  default     = "vault-azure-secrets-engine"
 }
 
-# Variable(s): Azure Application Name for Terraform Project Onboarding (default: terraform-onboarding)
+# Variable(s): Azure Application Name for Terraform Project Onboarding
 variable "azure_app_terraform_onboarding" {
   type        = string
   description = "azure application name for terraform project onboarding"
-  default     = "terraform-onboarding"
+  default     = "vault-azure-project-onboarding"
 }
 
 /*******************************************
@@ -164,8 +164,17 @@ variable "github_token" {
   sensitive   = true
 }
 
-# Variable(s): GitHub Workspace Module Repo (default: kevin-loehfelm/terraform-demo-new-project)
-variable "github_workspace_module_repo" {
-  type    = string
-  default = "kevin-loehfelm/terraform-demo-new-project"
+# Variable(s): GitHub Workspace Module Repo for Onboarding with Azure Native Dynamic Credentials
+variable "github_repo_azure_native" {
+  type = string
+}
+
+# Variable(s): GitHub Workspace Module Repo for Onboarding with Vault-Backed Azure Dynamic Credentials with existing Service Principals
+variable "github_repo_azure_vault_static" {
+  type = string
+}
+
+# Variable(s): GitHub Workspace Module Repo for Onboarding with Vault-Backed Azure Dynamic Credentials with dynamic Service Principals
+variable "github_repo_azure_vault_dynamic" {
+  type = string
 }

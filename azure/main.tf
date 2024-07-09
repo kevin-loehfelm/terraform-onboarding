@@ -120,6 +120,7 @@ resource "vault_policy" "terraform" {
     azure_secrets_role     = var.vault_azure_secrets_role
     terraform_secrets_path = var.vault_terraform_secrets_path
     terraform_secrets_role = var.vault_terraform_secrets_role
+    terraform_auth_path    = var.vault_auth_path
     static_secrets_path    = var.vault_static_secrets_path
     static_github_key      = var.vault_static_github_key
     static_terraform_key   = var.vault_static_terraform_key
@@ -202,93 +203,69 @@ data "external" "env" {
 resource "tfe_project" "this" {
   organization = var.terraform_org_name
   name         = var.terraform_project_name
+  description  = "Onboarding for Azure Infrastructure Automation"
+}
+
+# Resource(s): Terraform Variable Set for Terraform Auth to Vault
+resource "tfe_variable_set" "vault_auth" {
+  name         = "terraform-project-onboarding-vault-auth"
+  description  = "Terraform Project Onboarding: Terraform to Vault Authentication"
+  organization = var.terraform_org_name
+}
+
+# Resource(s): Terraform Variable(s) for Terraform Auth to Vault
+resource "tfe_variable" "vault_auth" {
+  for_each        = local.common_terraform_vault
+  key             = each.key
+  value           = each.value.content
+  category        = each.value.category
+  description     = each.value.description
+  variable_set_id = tfe_variable_set.vault_auth.id
+}
+
+# Resource(s): Associate Variable Set to Project
+resource "tfe_project_variable_set" "vault_auth" {
+  variable_set_id = tfe_variable_set.vault_auth.id
+  project_id      = tfe_project.this.id
+}
+
+# Resource(s): Terraform Variable Set for Vault-backed Azure Credentials
+resource "tfe_variable_set" "vault_azure" {
+  name         = "terraform-project-onboarding-vault-azure"
+  description  = "Terraform Project Onboarding: Terraform to Vault-backed Azure"
+  organization = var.terraform_org_name
+}
+
+# Resource(s): Terraform Variable(s) for Vault-backed Azure Credentials
+resource "tfe_variable" "vault_azure" {
+  for_each        = local.common_terraform_vault_azure
+  key             = each.key
+  value           = each.value.content
+  category        = each.value.category
+  description     = each.value.description
+  variable_set_id = tfe_variable_set.vault_azure.id
+}
+
+# Resource(s): Associate Variable Set to Project
+resource "tfe_project_variable_set" "vault_azure" {
+  variable_set_id = tfe_variable_set.vault_azure.id
+  project_id      = tfe_project.this.id
 }
 
 # Resource(s): Terraform Variable Set for Terraform Project Onboarding
 resource "tfe_variable_set" "this" {
   name         = var.terraform_variable_set_name
-  description  = "Vault-backed Workload Identity"
+  description  = "Terraform Project Onboarding: Auth & Secret Role(s)"
   organization = var.terraform_org_name
 }
 
-# Resource(s): Terraform Variable TFC_VAULT_ADDR
-resource "tfe_variable" "vault_addr" {
-  key             = "TFC_VAULT_ADDR"
-  value           = data.external.env.result.VAULT_ADDR
-  category        = "env"
-  description     = "Vault FQDN"
-  variable_set_id = tfe_variable_set.this.id
-}
-
-# Resource(s): Terraform Variable TFC_VAULT_NAMESPACE
-resource "tfe_variable" "vault_namespace" {
-  key             = "TFC_VAULT_NAMESPACE"
-  value           = data.external.env.result.VAULT_NAMESPACE
-  category        = "env"
-  description     = "Vault Namespace"
-  variable_set_id = tfe_variable_set.this.id
-}
-
-# Resource(s): Terraform Variable TFC_VAULT_PROVIDER_AUTH
-resource "tfe_variable" "enable_vault_auth" {
-  key             = "TFC_VAULT_PROVIDER_AUTH"
-  value           = true
-  category        = "env"
-  description     = "Enable Vault Provider auth"
-  variable_set_id = tfe_variable_set.this.id
-}
-
-# Resource(s): Terraform Variable TFC_VAULT_RUN_ROLE
-resource "tfe_variable" "vault_run_role" {
-  key             = "TFC_VAULT_RUN_ROLE"
-  value           = vault_jwt_auth_backend_role.terraform.role_name
-  category        = "env"
-  description     = "Vault auth role"
-  variable_set_id = tfe_variable_set.this.id
-}
-
-# Resource(s): Terraform Variable TFC_VAULT_AUTH_PATH
-resource "tfe_variable" "vault_auth_path" {
-  key             = "TFC_VAULT_AUTH_PATH"
-  value           = vault_jwt_auth_backend.this.path
-  category        = "env"
-  description     = "Vault auth path"
-  variable_set_id = tfe_variable_set.this.id
-}
-
-# Resource(s): Terraform Variable TFC_VAULT_BACKED_AZURE_RUN_VAULT_ROLE
-resource "tfe_variable" "vault_azure_auth" {
-  key             = "TFC_VAULT_BACKED_AZURE_RUN_VAULT_ROLE"
-  value           = vault_azure_secret_backend_role.this.role
-  category        = "env"
-  description     = "Vault-backed Azure Auth role"
-  variable_set_id = tfe_variable_set.this.id
-}
-
-# Resource(s): Terraform Variable TFC_VAULT_BACKED_AZURE_AUTH
-resource "tfe_variable" "vault_azure_auth_role" {
-  key             = "TFC_VAULT_BACKED_AZURE_AUTH"
-  value           = true
-  category        = "env"
-  description     = "Enable Vault-backed Azure Dynamic Credentials"
-  variable_set_id = tfe_variable_set.this.id
-}
-
-# Resource(s): Terraform Variable TFC_VAULT_BACKED_AZURE_MOUNT_PATH
-resource "tfe_variable" "vault_azure_auth_path" {
-  key             = "TFC_VAULT_BACKED_AZURE_MOUNT_PATH"
-  value           = vault_azure_secret_backend.this.path
-  category        = "env"
-  description     = "Azure Auth mount path"
-  variable_set_id = tfe_variable_set.this.id
-}
-
-# Resource(s): Terraform Variable TFC_VAULT_BACKED_AZURE_SLEEP_SECONDS (Eventual Consistency)
-resource "tfe_variable" "vault_azure_sleep_seconds" {
-  key             = "TFC_VAULT_BACKED_AZURE_SLEEP_SECONDS"
-  value           = 30
-  category        = "env"
-  description     = "Sleep Seconds"
+# Resource(s): Terraform Variable(s) for Terraform Project Onboarding
+resource "tfe_variable" "this" {
+  for_each        = local.terraform_onboarding
+  key             = each.key
+  value           = each.value.content
+  category        = each.value.category
+  description     = each.value.description
   variable_set_id = tfe_variable_set.this.id
 }
 
@@ -296,15 +273,6 @@ resource "tfe_variable" "vault_azure_sleep_seconds" {
 resource "tfe_project_variable_set" "this" {
   variable_set_id = tfe_variable_set.this.id
   project_id      = tfe_project.this.id
-}
-
-# Resource(s): Terraform Variable PREFIX
-resource "tfe_variable" "prefix" {
-  key             = "prefix"
-  value           = var.prefix
-  category        = "terraform"
-  description     = "prefix"
-  variable_set_id = tfe_variable_set.this.id
 }
 
 # Resource(s): Terraform Project for Production
@@ -330,12 +298,12 @@ data "tfe_github_app_installation" "this" {
   name = "kevin-loehfelm"
 }
 
-# Resource(s): Publish Project Module to PMR
-resource "tfe_registry_module" "this" {
+# Resource(s): Azure Native Dynamic Credentials (Persistent SPN) Onboarding Module
+resource "tfe_registry_module" "azure_native" {
   organization = var.terraform_org_name
   vcs_repo {
-    display_identifier         = var.github_workspace_module_repo
-    identifier                 = var.github_workspace_module_repo
+    display_identifier         = var.github_repo_azure_native
+    identifier                 = var.github_repo_azure_native
     branch                     = "main"
     github_app_installation_id = data.tfe_github_app_installation.this.id
   }
@@ -344,8 +312,48 @@ resource "tfe_registry_module" "this" {
   }
 }
 
-# Resource(s): Configure Published Module as No-Code Module
-resource "tfe_no_code_module" "this" {
+# Resource(s): Azure Native Dynamic Credentials (Persistent SPN) No-Code Module
+resource "tfe_no_code_module" "azure_native" {
   organization    = var.terraform_org_name
-  registry_module = tfe_registry_module.this.id
+  registry_module = tfe_registry_module.azure_native.id
+}
+
+# Resource(s): Azure Vault-Backed Dynamic Credentials (Persistent SPN) Onboarding Module
+resource "tfe_registry_module" "azure_vault_static" {
+  organization = var.terraform_org_name
+  vcs_repo {
+    display_identifier         = var.github_repo_azure_vault_static
+    identifier                 = var.github_repo_azure_vault_static
+    branch                     = "main"
+    github_app_installation_id = data.tfe_github_app_installation.this.id
+  }
+  test_config {
+    tests_enabled = false
+  }
+}
+
+# Resource(s): Azure Vault-Backed Dynamic Credentials (Persistent SPN) No-Code Module
+resource "tfe_no_code_module" "azure_vault_static" {
+  organization    = var.terraform_org_name
+  registry_module = tfe_registry_module.azure_vault_static.id
+}
+
+# Resource(s): Azure Vault-Backed Dynamic Credentials (Dynamic SPN) Onboarding Module
+resource "tfe_registry_module" "azure_vault_dynamic" {
+  organization = var.terraform_org_name
+  vcs_repo {
+    display_identifier         = var.github_repo_azure_vault_dynamic
+    identifier                 = var.github_repo_azure_vault_dynamic
+    branch                     = "main"
+    github_app_installation_id = data.tfe_github_app_installation.this.id
+  }
+  test_config {
+    tests_enabled = false
+  }
+}
+
+# Resource(s): Azure Vault-Backed Dynamic Credentials (Dynamic SPN) No-Code Module
+resource "tfe_no_code_module" "azure_vault_dynamic" {
+  organization    = var.terraform_org_name
+  registry_module = tfe_registry_module.azure_vault_dynamic.id
 }
