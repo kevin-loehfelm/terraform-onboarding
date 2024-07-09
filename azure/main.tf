@@ -22,6 +22,10 @@ resource "azuread_application" "vault" {
       id   = data.azuread_service_principal.msgraph.app_role_ids["Application.ReadWrite.All"]
       type = "Role"
     }
+    resource_access {
+      id   = data.azuread_service_principal.msgraph.app_role_ids["GroupMember.ReadWrite.All"]
+      type = "Role"
+    }
   }
 }
 
@@ -55,6 +59,10 @@ resource "azuread_application" "onboarding" {
       id   = data.azuread_service_principal.msgraph.app_role_ids["AppRoleAssignment.ReadWrite.All"]
       type = "Role"
     }
+    resource_access {
+      id = data.azuread_service_principal.msgraph.app_role_ids["Group.ReadWrite.All"]
+      type = "Role"
+    }
   }
 }
 
@@ -66,14 +74,15 @@ resource "azuread_service_principal" "onboarding" {
 
 # Resource(s): Grant Admin Privileges for Vault Azure Secrets Engine Service Principal
 resource "azuread_app_role_assignment" "vault" {
-  app_role_id         = data.azuread_service_principal.msgraph.app_role_ids["Application.ReadWrite.All"]
+  for_each            = toset(["Application.ReadWrite.All", "GroupMember.ReadWrite.All"])
+  app_role_id         = data.azuread_service_principal.msgraph.app_role_ids[each.key]
   principal_object_id = azuread_service_principal.vault.object_id
   resource_object_id  = data.azuread_service_principal.msgraph.object_id
 }
 
 # Resource(s): Grant Admin Privileges for Terraform Project Onboarding Service Principal
 resource "azuread_app_role_assignment" "onboarding" {
-  for_each            = toset(["Application.ReadWrite.All", "AppRoleAssignment.ReadWrite.All"])
+  for_each            = toset(["Application.ReadWrite.All", "AppRoleAssignment.ReadWrite.All", "Group.ReadWrite.All"])
   app_role_id         = data.azuread_service_principal.msgraph.app_role_ids[each.key]
   principal_object_id = azuread_service_principal.onboarding.object_id
   resource_object_id  = data.azuread_service_principal.msgraph.object_id
