@@ -1,21 +1,41 @@
 # Local(s): Read Terraform Credentials from host configuration
 locals {
   tfe_credentials = jsondecode(file("~/.terraform.d/credentials.tfrc.json"))
+  vault_permissions = {
+    scope = [
+      "User.Read"
+    ]
+    role = [
+      "Application.ReadWrite.All",
+      "GroupMember.ReadWrite.All"
+    ]
+  }
+  onboarding_permissions = {
+    scope = [
+      "User.Read"
+    ]
+    role = [
+      "Application.ReadWrite.All",
+      "AppRoleAssignment.ReadWrite.All",
+      "GroupMember.ReadWrite.All",
+      "Group.ReadWrite.All"
+    ]
+  }
   terraform_onboarding = {
     prefix = {
       content     = var.prefix
       category    = "terraform"
       description = "resource prefix"
     }
-    TFC_VAULT_RUN_ROLE = {
-      content     = vault_jwt_auth_backend_role.terraform.role_name
-      category    = "env"
-      description = "vault auth role"
-    }
     TFC_VAULT_BACKED_AZURE_RUN_VAULT_ROLE = {
       content     = vault_azure_secret_backend_role.this.role
       category    = "env"
-      description = "vault-backed azure credential role"
+      description = "vault azure secrets role for azure onboarding service principal"
+    }
+    TFC_VAULT_RUN_ROLE = {
+      content     = vault_jwt_auth_backend_role.terraform.role_name
+      category    = "env"
+      description = "vault auth role for azure onboarding project"
     }
   }
   common_terraform_vault = {

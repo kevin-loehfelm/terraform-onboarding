@@ -14,19 +14,29 @@ resource "azuread_application" "vault" {
   owners       = [data.azuread_client_config.current.object_id]
   required_resource_access {
     resource_app_id = data.azuread_service_principal.msgraph.client_id
-    resource_access {
-      id   = data.azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.Read"]
-      type = "Scope"
+    dynamic "resource_access" {
+      for_each = toset(local.vault_permissions.scope)
+      content {
+        id   = data.azuread_service_principal.msgraph.oauth2_permission_scope_ids[resource_access.key]
+        type = "Scope"
+      }
     }
-    resource_access {
-      id   = data.azuread_service_principal.msgraph.app_role_ids["Application.ReadWrite.All"]
-      type = "Role"
-    }
-    resource_access {
-      id   = data.azuread_service_principal.msgraph.app_role_ids["GroupMember.ReadWrite.All"]
-      type = "Role"
+    dynamic "resource_access" {
+      for_each = toset(local.vault_permissions.role)
+      content {
+        id   = data.azuread_service_principal.msgraph.app_role_ids[resource_access.key]
+        type = "Role"
+      }
     }
   }
+}
+
+# Resource(s): Grant Admin Privileges for Vault Azure Secrets Engine Service Principal
+resource "azuread_app_role_assignment" "vault" {
+  for_each            = toset(local.vault_permissions.role)
+  app_role_id         = data.azuread_service_principal.msgraph.app_role_ids[each.key]
+  principal_object_id = azuread_service_principal.vault.object_id
+  resource_object_id  = data.azuread_service_principal.msgraph.object_id
 }
 
 # Resource(s): Azure Service Principal for Vault Azure Secrets Engine
@@ -47,45 +57,36 @@ resource "azuread_application" "onboarding" {
   owners       = [data.azuread_client_config.current.object_id]
   required_resource_access {
     resource_app_id = data.azuread_service_principal.msgraph.client_id
-    resource_access {
-      id   = data.azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.Read"]
-      type = "Scope"
+    dynamic "resource_access" {
+      for_each = toset(local.onboarding_permissions.scope)
+      content {
+        # id   = data.azuread_service_principal.msgraph.oauth2_permission_scope_ids[resource_access.key]
+        id   = data.azuread_service_principal.msgraph.oauth2_permission_scope_ids[resource_access.key]
+        type = "Scope"
+      }
     }
-    resource_access {
-      id   = data.azuread_service_principal.msgraph.app_role_ids["Application.ReadWrite.All"]
-      type = "Role"
-    }
-    resource_access {
-      id   = data.azuread_service_principal.msgraph.app_role_ids["AppRoleAssignment.ReadWrite.All"]
-      type = "Role"
-    }
-    resource_access {
-      id = data.azuread_service_principal.msgraph.app_role_ids["Group.ReadWrite.All"]
-      type = "Role"
+    dynamic "resource_access" {
+      for_each = toset(local.onboarding_permissions.role)
+      content {
+        id   = data.azuread_service_principal.msgraph.app_role_ids[resource_access.key]
+        type = "Role"
+      }
     }
   }
+}
+
+# Resource(s): Grant Admin Privileges for Terraform Project Onboarding Service Principal
+resource "azuread_app_role_assignment" "onboarding" {
+  for_each            = toset(local.onboarding_permissions.role)
+  app_role_id         = data.azuread_service_principal.msgraph.app_role_ids[each.key]
+  principal_object_id = azuread_service_principal.onboarding.object_id
+  resource_object_id  = data.azuread_service_principal.msgraph.object_id
 }
 
 # Resource(s): Azure Service Principal for Terraform Project Onboarding
 resource "azuread_service_principal" "onboarding" {
   client_id = azuread_application.onboarding.client_id
   owners    = [data.azuread_client_config.current.object_id]
-}
-
-# Resource(s): Grant Admin Privileges for Vault Azure Secrets Engine Service Principal
-resource "azuread_app_role_assignment" "vault" {
-  for_each            = toset(["Application.ReadWrite.All", "GroupMember.ReadWrite.All"])
-  app_role_id         = data.azuread_service_principal.msgraph.app_role_ids[each.key]
-  principal_object_id = azuread_service_principal.vault.object_id
-  resource_object_id  = data.azuread_service_principal.msgraph.object_id
-}
-
-# Resource(s): Grant Admin Privileges for Terraform Project Onboarding Service Principal
-resource "azuread_app_role_assignment" "onboarding" {
-  for_each            = toset(["Application.ReadWrite.All", "AppRoleAssignment.ReadWrite.All", "Group.ReadWrite.All"])
-  app_role_id         = data.azuread_service_principal.msgraph.app_role_ids[each.key]
-  principal_object_id = azuread_service_principal.onboarding.object_id
-  resource_object_id  = data.azuread_service_principal.msgraph.object_id
 }
 
 # Resource(s): 30 second wait to account for Azure Eventual Consistency
@@ -241,7 +242,7 @@ resource "tfe_project_variable_set" "vault_auth" {
 # Resource(s): Terraform Variable Set for Vault-backed Azure Credentials
 resource "tfe_variable_set" "vault_azure" {
   name         = "terraform-project-onboarding-vault-azure"
-  description  = "Terraform Project Onboarding: Terraform to Vault-backed Azure"
+  description  = "Terraform Project Onboarding: Terraform to Vault-backed Azure Secrets Engine"
   organization = var.terraform_org_name
 }
 
