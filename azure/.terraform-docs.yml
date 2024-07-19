@@ -1,0 +1,87 @@
+formatter: "markdown table" # this is required
+
+version: "0.18"
+
+header-from: main.tf
+
+footer-from: ""
+
+recursive:
+  enabled: false
+  path: ""
+
+sections:
+  hide: []
+  show: []
+
+content: |-
+  ## Usage
+
+  1. Clone this repository locally
+  2. Configure terraform.tfvars with environment specifics (reference sample terraform.tfvars.sample)
+  3. Configure environment
+
+    - Login to Azure tenant with a credential authorized to create and grant administative access to service principals
+  
+      ```
+      az login --tenant <tenant_id>
+      ```
+
+    - Login to HCP Terraform
+
+      ```
+      terraform login
+      ```
+
+    - Configure environment with a Vault token authorized for administraative access to Vault
+
+      ```
+      export VAULT_TOKEN=<vault_token>
+      ```
+
+  4. Apply Terraform Configuration
+
+    ```
+    terraform init
+    terraform plan
+    terraform apply
+    ```
+  
+  {{ .Requirements }}
+
+  {{ .Resources }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
+
+output:
+  file: README.md
+  mode: replace 
+  template: |-
+      <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
+      {{ .Content }}
+      <!-- END_AUTOMATED_TF_DOCS_BLOCK -->
+
+output-values:
+  enabled: false
+  from: outputs.tf
+
+sort:
+  enabled: true
+  by: required
+
+settings:
+  anchor: true
+  color: true
+  default: true
+  description: true
+  escape: true
+  hide-empty: false
+  html: true
+  indent: 2
+  lockfile: true
+  read-comments: true
+  required: true
+  sensitive: true
+  type: true

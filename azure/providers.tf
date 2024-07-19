@@ -1,2 +1,2 @@
-# Provider(s): AzureAD Provider
+# Provider(s): Azure Entra ID (Active Directory)
 provider "azuread" {}

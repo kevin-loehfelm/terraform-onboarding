@@ -1,6 +1,5 @@
 # Local(s): Read Terraform Credentials from host configuration
 locals {
-  tfe_credentials = jsondecode(file("~/.terraform.d/credentials.tfrc.json"))
   vault_permissions = {
     scope = [
       "User.Read"
@@ -21,7 +20,7 @@ locals {
       "Group.ReadWrite.All"
     ]
   }
-  terraform_onboarding = {
+  azure_onboarding = {
     prefix = {
       content     = var.prefix
       category    = "terraform"
@@ -40,12 +39,12 @@ locals {
   }
   common_terraform_vault = {
     TFC_VAULT_ADDR = {
-      content     = data.external.env.result.VAULT_ADDR
+      content     = var.vault_addr
       category    = "env"
       description = "vault address"
     }
     TFC_VAULT_NAMESPACE = {
-      content     = data.external.env.result.VAULT_NAMESPACE
+      content     = var.vault_namespace
       category    = "env"
       description = "vault namespace"
     }

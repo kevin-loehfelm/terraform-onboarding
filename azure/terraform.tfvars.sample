@@ -1,0 +1,36 @@
+## Environment
+prefix      = "ssc-demo"
+default_ttl = 300
+max_ttl     = 600
+
+## Azure
+azure_app_azure_secrets_engine = "vault-azure-secrets-engine"
+azure_app_onboarding           = "vault-azure-project-onboarding"
+
+## Terraform
+terraform_token                   = "<redacted>"
+terraform_addr                    = "https://app.terraform.io" # HCP Terraform
+terraform_org_name                = "kloehfelm-demo"
+terraform_onboarding_project_name = "azure-onboarding"
+terraform_variable_set_name       = "vault-azure-project-onboarding"
+
+## Vault
+vault_addr                   = "https://<vault_fqdn>:8200"
+vault_namespace              = "admin"
+vault_auth_path              = "terraform"
+vault_policy_name            = "azure_project_onboarding"
+vault_auth_role_name         = "azure_project_onboarding"
+vault_azure_secrets_path     = "azure"
+vault_azure_secrets_role     = "azure_project_onboarding"
+vault_terraform_secrets_path = "terraform"
+vault_terraform_secrets_role = "azure_project_onboarding"
+vault_static_secrets_path    = "static"
+vault_static_github_key      = "github"
+vault_static_terraform_key   = "terraform"
+
+## GitHub
+github_organization             = "<github_username_or_organization>"
+github_token                    = "<redacted>"
+github_repo_azure_native        = "kevin-loehfelm/terraform-onboarding-azure-native-project"
+github_repo_azure_vault_static  = "kevin-loehfelm/terraform-onboarding-azure-vault-backed-static-project"
+github_repo_azure_vault_dynamic = "kevin-loehfelm/terraform-onboarding-azure-vault-backed-dynamic-project"
