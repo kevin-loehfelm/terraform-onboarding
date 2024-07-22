@@ -1,5 +1,5 @@
 ## Environment
-prefix      = "ssc-demo"
+prefix      = "demo"
 default_ttl = 300
 max_ttl     = 600
 
@@ -8,15 +8,15 @@ azure_app_azure_secrets_engine = "vault-azure-secrets-engine"
 azure_app_onboarding           = "vault-azure-project-onboarding"
 
 ## Terraform
-terraform_token                   = "<redacted>"
-terraform_addr                    = "https://app.terraform.io" # HCP Terraform
-terraform_org_name                = "kloehfelm-demo"
+terraform_token                   = "<terraform_token>"
+terraform_addr                    = "https://app.terraform.io"
+terraform_org_name                = "<terraform_organization>"
 terraform_onboarding_project_name = "azure-onboarding"
 terraform_variable_set_name       = "vault-azure-project-onboarding"
 
 ## Vault
 vault_addr                   = "https://<vault_fqdn>:8200"
-vault_namespace              = "admin"
+vault_namespace              = ""
 vault_auth_path              = "terraform"
 vault_policy_name            = "azure_project_onboarding"
 vault_auth_role_name         = "azure_project_onboarding"

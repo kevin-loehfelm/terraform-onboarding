@@ -17,7 +17,7 @@
     terraform login
     ```
 
-  - Configure environment with a Vault token authorized for administraative access to Vault
+  - Configure environment with a Vault token authorized for administrative access to Vault
 
     ```
     export VAULT_TOKEN=<vault_token>

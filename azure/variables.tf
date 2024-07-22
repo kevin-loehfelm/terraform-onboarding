@@ -64,6 +64,7 @@ variable "terraform_org_name" {
 variable "terraform_onboarding_project_name" {
   type        = string
   description = "terraform project name: custom, *"
+  default     = "azure-onboarding"
 }
 
 # Variable(s): Terraform Variable Set for Azure Project Onboarding
